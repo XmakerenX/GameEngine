@@ -1,7 +1,7 @@
 #ifndef  _VIRTUALKEYSWINDOWS_H
 #define  _VIRTUALKEYSWINDOWS_H
 
-#include "virtualKeysGame.h"
+#include "../virtualKeysGame.h"
 
 // created based on WinUser.h
 static GK_VirtualKey windowsVirtualKeysTable[] = {

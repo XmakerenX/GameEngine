@@ -1,72 +1,43 @@
-#include "GameWin.h"
+#include "WindowsGameWin.h"
 #include <windowsx.h>
 #undef max
 #undef min
-//#include <cmath>
 #include "virtualKeysWindows.h"
-#include "gameInput.h"
 
-std::string GameWin::s_clipboardString;
-const double GameWin::s_doubleClickTime = 0.5;
-
-std::ostream& operator<<(std::ostream& os, const Resolution res)
-{
-    os << res.width << " " << res.height;
-    return os;
-}
-
-std::istream& operator>>(std::istream& is, Resolution res)
-{
-    is >> res.width;
-    is >> res.height;
-    return is;
-}
+std::string WindowsGameWin::s_clipboardString;
 
 //-----------------------------------------------------------------------------
-// Name : GameWin (constructor)
+// Name : WindowsGameWin (constructor)
 //-----------------------------------------------------------------------------
-GameWin::GameWin()
+WindowsGameWin::WindowsGameWin()
 {
+	m_hInstance = nullptr;
 	m_hWnd = nullptr;
 	m_hDC = nullptr;
 	m_hRC = nullptr;
-
-    font_ = nullptr;
-    
-    gameRunning = true;
-
-    for (int i = 0; i < 256; i++)
-        keysStatus[i] = false;
-
-    mouseDrag = false;
-
-    faceCount = -1;
-    meshIndex = -1;
-    hit = false;
-    selectedObj = nullptr;
-
-    lastLeftClickTime = 0;
-    lastRightClickTime = 0;
-    m_scene = nullptr;
-    m_sceneInput = true;
-    
-	spriteShader = nullptr;
-	spriteTextShader = nullptr;
 
     m_primaryMonitorIndex = 0;
 }
 
 //-----------------------------------------------------------------------------
-// Name : GameWin (destructor)
+// Name : WindowsGameWin (destructor)
 //-----------------------------------------------------------------------------
-GameWin::~GameWin()
+WindowsGameWin::~WindowsGameWin()
 {
+}
+
+//-----------------------------------------------------------------------------
+// Name : setHINSTANCE (destructor)
+//-----------------------------------------------------------------------------
+void WindowsGameWin::setHINSTANCE(HINSTANCE hInstance)
+{
+	m_hInstance = hInstance;
 }
 
 //-----------------------------------------------------------------------------
 // Name : initWindow ()
 //-----------------------------------------------------------------------------
-bool GameWin::initWindow()
+bool WindowsGameWin::initWindow()
 {
     return true;
 }
@@ -74,7 +45,7 @@ bool GameWin::initWindow()
 //-----------------------------------------------------------------------------
 // Name : getMonitorsInfo ()
 //-----------------------------------------------------------------------------
-void GameWin::getMonitorsInfo()
+void WindowsGameWin::getMonitorsInfo()
 {
 	int i = 0;
 	Resolution moniotrResolutions[] = { Resolution(1920, 1080),
@@ -140,7 +111,7 @@ void GameWin::getMonitorsInfo()
 //-----------------------------------------------------------------------------
 // Name : getMonitorsModes ()
 //-----------------------------------------------------------------------------
-std::vector<std::vector<Mode1>> GameWin::getMonitorsModes() const
+std::vector<std::vector<Mode1>> WindowsGameWin::getMonitorsModes() const
 {
     std::vector<std::vector<Mode1>> monitorsModes;
     for (MonitorInfo monitor : m_monitors)
@@ -159,7 +130,7 @@ std::vector<std::vector<Mode1>> GameWin::getMonitorsModes() const
 // Name : StaticWndProc 
 // Desc : forward the message to the proper instance of the class 
 //-----------------------------------------------------------------------------
-LRESULT CALLBACK GameWin::staticWindowProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK WindowsGameWin::staticWindowProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam)
 {
 	int tmep = sizeof(LONG_PTR);
 	int temp2 = sizeof(LPVOID);
@@ -167,7 +138,7 @@ LRESULT CALLBACK GameWin::staticWindowProc(HWND hWnd, UINT Message, WPARAM wPara
 	if (Message == WM_CREATE) SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)((CREATESTRUCT FAR *)lParam)->lpCreateParams);
 
 	// Obtain the correct destination for this message
-	GameWin *Destination = (GameWin*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
+	WindowsGameWin *Destination = (WindowsGameWin*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
 
 	// If the hWnd has a related class, pass it through
 	if (Destination) return Destination->windowProc(hWnd, Message, wParam, lParam);
@@ -179,7 +150,7 @@ LRESULT CALLBACK GameWin::staticWindowProc(HWND hWnd, UINT Message, WPARAM wPara
 //-----------------------------------------------------------------------------
 // Name : windowProc 
 //-----------------------------------------------------------------------------
-LRESULT CALLBACK GameWin::windowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK WindowsGameWin::windowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	ModifierKeysStates modifierKeys(GetAsyncKeyState(VK_SHIFT) < 0, GetAsyncKeyState(VK_CONTROL) < 0, false);
 
@@ -321,7 +292,7 @@ LRESULT CALLBACK GameWin::windowProc(HWND hWnd, UINT message, WPARAM wParam, LPA
 //-----------------------------------------------------------------------------
 // Name : createWindow ()
 //-----------------------------------------------------------------------------
-bool GameWin::createWindow(int width, int height , HINSTANCE hInstance)
+bool WindowsGameWin::createWindow(int width, int height)
 {
 	//Creating the window 
 	WNDCLASS wc;
@@ -329,7 +300,7 @@ bool GameWin::createWindow(int width, int height , HINSTANCE hInstance)
 	wc.lpfnWndProc = staticWindowProc;
 	wc.cbClsExtra = 0;
 	wc.cbWndExtra = 0;
-	wc.hInstance = hInstance;
+	wc.hInstance = m_hInstance;
 	wc.hIcon = LoadIcon(0, IDI_APPLICATION);
 	wc.hCursor = LoadCursor(0, IDC_ARROW);
 	wc.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
@@ -342,7 +313,7 @@ bool GameWin::createWindow(int width, int height , HINSTANCE hInstance)
 		return nullptr;
 	}
 
-	m_hWnd = ::CreateWindowEx(WS_EX_CLIENTEDGE, "Chess", "3D Chess", WS_OVERLAPPEDWINDOW | WS_VISIBLE, 0, 0, width, height, NULL, NULL, hInstance, (void*)this);
+	m_hWnd = ::CreateWindowEx(WS_EX_CLIENTEDGE, "Chess", "3D Chess", WS_OVERLAPPEDWINDOW | WS_VISIBLE, 0, 0, width, height, NULL, NULL, m_hInstance, (void*)this);
 
 	if (m_hWnd)
 	{
@@ -409,9 +380,9 @@ HWND createDummyWindow(HINSTANCE hInstance)
 //-----------------------------------------------------------------------------
 // Name : createOpenGLContext ()
 //-----------------------------------------------------------------------------
-bool GameWin::createOpenGLContext(HINSTANCE hInstance)
+bool WindowsGameWin::createOpenGLContext()
 {
-	HWND dummyhWnd = createDummyWindow(hInstance);
+	HWND dummyhWnd = createDummyWindow(m_hInstance);
 	if (!dummyhWnd)
 		return false;
 
@@ -490,9 +461,17 @@ bool GameWin::createOpenGLContext(HINSTANCE hInstance)
 }
 
 //-----------------------------------------------------------------------------
+// Name : glSwapBuffers ()
+//-----------------------------------------------------------------------------
+void WindowsGameWin::glSwapBuffers()
+{
+	SwapBuffers(m_hDC);
+}
+
+//-----------------------------------------------------------------------------
 // Name : setFullScreenMode ()
 //-----------------------------------------------------------------------------
-void GameWin::setFullScreenMode(bool fullscreen)
+void WindowsGameWin::setFullScreenMode(bool fullscreen)
 {
 	if (fullscreen)
 	{
@@ -513,15 +492,14 @@ void GameWin::setFullScreenMode(bool fullscreen)
 	else
 	{
 		SetWindowLongPtr(m_hWnd, GWL_STYLE, WS_OVERLAPPEDWINDOW | WS_VISIBLE);
-		setWindowSize(1600, 900);
-		//setWindowSize(1024, 768);
+		setWindowSize(1024, 768);
 	}
 }
 
 //-----------------------------------------------------------------------------
 // Name : setMonitorResolution ()
 //-----------------------------------------------------------------------------
-bool GameWin::setMonitorResolution(int monitorIndex, Resolution newResolution)
+bool WindowsGameWin::setMonitorResolution(int monitorIndex, Resolution newResolution)
 {
 	if (monitorIndex > m_monitors.size())
 		return false;
@@ -551,14 +529,14 @@ bool GameWin::setMonitorResolution(int monitorIndex, Resolution newResolution)
 			return true;
 		}
 	}
-	else
-		return false;
+
+	return false;
 }
 
 //-----------------------------------------------------------------------------
 // Name : setWindowPosition ()
 //-----------------------------------------------------------------------------
-void GameWin::setWindowPosition(int x, int y)
+void WindowsGameWin::setWindowPosition(int x, int y)
 {
 	SetWindowPos(m_hWnd, HWND_TOP, x, y, 0, 0, SWP_NOSIZE);
 }
@@ -566,7 +544,7 @@ void GameWin::setWindowPosition(int x, int y)
 //-----------------------------------------------------------------------------
 // Name : setWindowSize ()
 //-----------------------------------------------------------------------------
-void GameWin::setWindowSize(GLuint width, GLuint height)
+void WindowsGameWin::setWindowSize(GLuint width, GLuint height)
 {
 	RECT wr = { 0, 0, width, height};
 	AdjustWindowRect(&wr, WS_OVERLAPPEDWINDOW, FALSE);
@@ -584,7 +562,7 @@ void GameWin::setWindowSize(GLuint width, GLuint height)
 //-----------------------------------------------------------------------------
 // Name : moveWindowToMonitor ()
 //-----------------------------------------------------------------------------
-void GameWin::moveWindowToMonitor(int monitorIndex)
+void WindowsGameWin::moveWindowToMonitor(int monitorIndex)
 {
     Point windowPosition = getWindowPosition();
     if (!m_monitors[monitorIndex].positionRect.isPointInRect(windowPosition))
@@ -593,77 +571,19 @@ void GameWin::moveWindowToMonitor(int monitorIndex)
                           m_monitors[monitorIndex].positionRect.top);
     }
 }
-
-//-----------------------------------------------------------------------------
-// Name : initGUI ()
-//-----------------------------------------------------------------------------
-void GameWin::initGUI()
-{
-//     m_dialog.init(300,300, 18, "Caption!", "", glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), m_asset);
-//     m_dialog.setLocation(50, 100);
-//     m_dialog.initDefControlElements(m_asset);
-//     //m_dialog.initWoodControlElements(m_asset);
-//     ButtonUI* pButton;
-//     m_dialog.addButton(1, "button text", 20,20, 200, 25, 0, &pButton);
-//     pButton->setEnabled(false);
-//     m_dialog.addButton(2, "enabled button", 20, 60, 200, 25, 0);
-//     m_dialog.addCheckBox(3, 100,100, 50, 50, 0);
-//     m_dialog.addRadioButton(4, 30, 150, 25,25,0,1);
-//     m_dialog.addRadioButton(5, 90, 150, 25,25,0,1);
-//     ComboBoxUI* pCombo;
-//     //m_dialog.addComboBox(6, "Box", 20, 200, 200, 40, 0, &pCombo);
-//     m_dialog.addComboBox(6, "Box", 20, 200, 300, 60, 0, &pCombo);
-//     pCombo->AddItem("Sunday", 1);
-//     pCombo->AddItem("Monday", 2);
-//     pCombo->AddItem("Tuesday", 3);
-//     pCombo->AddItem("Wednesday", 4);
-//     pCombo->AddItem("Thursday", 5);
-//     pCombo->AddItem("Friday", 6);
-//     pCombo->AddItem("Saturday", 7);
-// 
-//     ListBoxUI<int>* pListbox;
-//     m_dialog.addListBox(7, 350,200, 200,100, true, &pListbox);
-//     pListbox->AddItem("Sunday", 1);
-//     pListbox->AddItem("Monday", 2);
-//     pListbox->AddItem("Tuesday", 3);
-//     pListbox->AddItem("Wednesday", 4);
-//     pListbox->AddItem("Thursday", 5);
-//     pListbox->AddItem("Friday", 6);
-//     pListbox->AddItem("Saturday", 7);
-// 
-//     m_dialog.addSlider(8, 0, 0, 200, 40, 0, 100, 50);
-// 
-//     m_dialog.addEditbox(9, "Test TgTy",180, 100, 100, 35, nullptr );
-// 
-//     //m_dialog.addButton(10, "Center me", 20, 300, 400, 141, 0);
-// 
-//     m_dialog.addEditbox(11, "Test TgTy",420, 300, 400, 100, nullptr );
-}
-
-//-----------------------------------------------------------------------------
-// Name : setRenderStates ()
-//-----------------------------------------------------------------------------
-void GameWin::setRenderStates()
-{
-    glEnable(GL_CULL_FACE);
-    glEnable(GL_DEPTH_TEST);
-    //glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-}
     
 //-----------------------------------------------------------------------------
 // Name : initOpenGL ()
 //-----------------------------------------------------------------------------
-bool GameWin::initOpenGL(int width, int height, HINSTANCE hInstance)
+bool WindowsGameWin::initOpenGL(int width, int height)
 {
     int err;
     std::cout << "InitOpenGL started\n";
 
-    if (!createWindow(width, height, hInstance))
+    if (!createWindow(width, height))
         return false; 
         
-    if(!createOpenGLContext(hInstance))
+    if(!createOpenGLContext())
         return false;
     
     glewInit();
@@ -718,7 +638,7 @@ bool GameWin::initOpenGL(int width, int height, HINSTANCE hInstance)
 //-----------------------------------------------------------------------------
 // Name : isExtensionSupported ()
 //-----------------------------------------------------------------------------
-bool GameWin::isExtensionSupported(const char *extList, const char *extension)
+bool WindowsGameWin::isExtensionSupported(const char *extList, const char *extension)
 {
     const char *start;
     const char *where, *terminator;
@@ -754,7 +674,7 @@ bool GameWin::isExtensionSupported(const char *extList, const char *extension)
 //-----------------------------------------------------------------------------
 // Name : copyToClipboard ()
 //-----------------------------------------------------------------------------
-void GameWin::copyToClipboard(const std::string &text)
+void WindowsGameWin::copyToClipboard(const std::string &text)
 {
 	HGLOBAL hMem = GlobalAlloc(GMEM_MOVEABLE, text.size());
 	memcpy(GlobalLock(hMem), text.data(), text.size());
@@ -768,7 +688,7 @@ void GameWin::copyToClipboard(const std::string &text)
 //-----------------------------------------------------------------------------
 // Name : PasteClipboard ()
 //-----------------------------------------------------------------------------
-std::string GameWin::PasteClipboard()
+std::string WindowsGameWin::PasteClipboard()
 {
 	// Try opening the clipboard
 	if (!OpenClipboard(nullptr))
@@ -808,158 +728,9 @@ std::string GameWin::PasteClipboard()
 }
 
 //-----------------------------------------------------------------------------
-// Name : drawing ()
-//-----------------------------------------------------------------------------
-void GameWin::drawing()
-{
-    int err;
-
-    ProcessInput(timer.getTimeElapsed());
-
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    if(m_scene)
-        m_scene->Drawing(timer.getTimeElapsed());
-
-    std::stringstream ss;
-    if (m_scene != nullptr)
-    {
-        ss << m_scene->getMeshIndex();
-        ss << " ";
-        ss << m_scene->getFaceCount();
-        ss << " | ";
-        int faceCount = m_scene->getFaceCount();
-        int temp = (faceCount / 8);
-        int square = (faceCount / 2) - (((faceCount / 2) / 4) * 4 );
-        if ( (m_scene->getMeshIndex() == 0 && temp % 2 == 0) ||
-         (m_scene->getMeshIndex() == 1 && temp % 2 != 0))
-        {
-            ss << square * 2;
-            square = square * 2;
-        }
-        else
-        {
-            ss << square * 2 + 1;
-            square = square * 2 + 1;
-        }
-        ss << " ";
-        //int temp = (8 - 1 - (faceCount / 8));
-        ss << temp;
-        ss << " | ";
-        ss << temp << " " << 7 - square;
-    }
-    
-
-    glDisable(GL_DEPTH_TEST);
-    renderFPS(m_sprites[1], *font_);
-    font_->renderToRect(m_sprites[1], ss.str(), Rect(0,65, 500, 200), 
-                        glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
-    
-    if(m_scene)
-        font_->renderToRect(m_sprites[1], m_scene->getStatus(), Rect(0, 130, 2000, 200), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
-    
-    renderGUI();
-
-    m_sprites[0].Render(spriteShader);
-    m_sprites[0].Clear();
-    m_sprites[1].Render(spriteTextShader);
-    m_sprites[1].Clear();
-    m_topSprites[0].Render(spriteShader);
-    m_topSprites[0].Clear();
-    m_topSprites[1].Render(spriteTextShader);
-    m_topSprites[1].Clear();
-        
-    glEnable(GL_DEPTH_TEST);
-
-    err = glGetError();
-    if (err != GL_NO_ERROR)
-    {
-        std::cout <<"Drawing: ERROR bitches " << err << " :";
-        std::cout << gluErrorString(err) << "\n";
-    }
-
-	SwapBuffers(m_hDC);
-}
-
-//-----------------------------------------------------------------------------
-// Name : renderGUI ()
-//-----------------------------------------------------------------------------
-void GameWin::renderGUI()
-{
-//     m_dialog.OnRender(m_sprite, m_textSprite, m_asset, timer.getCurrentTime());;
-//     Point textSize = font_->calcTextRect("[]a");
-//     font_->renderToRect(m_textSprite, "[]a", Rect(0,50, 0 + textSize.x, 50 + textSize.y), WHITE_COLOR);
-//     m_sprite.AddTintedQuad(Rect(0,50,0 + textSize.x, 50 + textSize.y), glm::vec4(1.0f, 0.0, 0.0, 1.0f));
-}
-
-//-----------------------------------------------------------------------------
-// Name : renderFPS ()
-//-----------------------------------------------------------------------------
-void GameWin::renderFPS(Sprite& textSprite, mkFont& font)
-{
-    font.renderToRect(textSprite, std::to_string(timer.getFPS()), Rect(0,0, 200,60), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
-}
-
-//-----------------------------------------------------------------------------
-// Name : reshape ()
-//-----------------------------------------------------------------------------
-void GameWin::reshape(int width, int height)
-{
-    //if(m_winWidth != width || m_winHeight != height)
-    {
-        std::cout <<"reshape called\n";
-        std::cout << "New window size is " << width << "X" << height << "\n";
-        m_winWidth = width;
-        m_winHeight = height;
-
-        if(m_scene)
-            m_scene->reshape(m_winWidth,m_winHeight);
-        else
-            glViewport(0.0f,0.0f, width, height);
-
-        if (spriteShader != nullptr)
-        {
-            spriteShader->Use();
-            glUniform2i( glGetUniformLocation(spriteShader->Program, "screenSize"), width / 2, height / 2);
-        }
-        
-        if (spriteTextShader != nullptr)
-        {
-            spriteTextShader->Use();
-            glUniform2i( glGetUniformLocation(spriteTextShader->Program, "screenSize"), width / 2, height / 2);
-        }
-        
-        onSizeChanged();
-    }
-    //else
-    //    std::cout <<"reshape ignored\n";
-}
-
-//-----------------------------------------------------------------------------
-// Name : ProcessInput ()
-//-----------------------------------------------------------------------------
-void GameWin::ProcessInput(double timeDelta)
-{
-    float X = 0.0f,Y = 0.0f;
-    if (mouseDrag)
-    {
-        Point currentCursorPos = getCursorPos();
-
-        X = (float)(currentCursorPos.x - oldCursorLoc.x) / 3.0f;
-        Y = (float)(currentCursorPos.y - oldCursorLoc.y) / 3.0f;
-
-        setCursorPos(Point(oldCursorLoc));
-    }
-    
-    if(m_scene && m_sceneInput)
-        m_scene->processInput(timeDelta, keysStatus, X, Y);
-}
-
-//-----------------------------------------------------------------------------
 // Name : setCursorPos ()
 //-----------------------------------------------------------------------------
-void GameWin::setCursorPos(Point newPos)
+void WindowsGameWin::setCursorPos(Point newPos)
 {
 	POINT newCursorPos;
 	newCursorPos.x = newPos.x;
@@ -972,7 +743,7 @@ void GameWin::setCursorPos(Point newPos)
 //-----------------------------------------------------------------------------
 // Name : getCursorPos ()
 //-----------------------------------------------------------------------------
-Point GameWin::getCursorPos()
+Point WindowsGameWin::getCursorPos()
 {
 	POINT cursorPos;
 	GetCursorPos(&cursorPos);
@@ -984,9 +755,9 @@ Point GameWin::getCursorPos()
 //-----------------------------------------------------------------------------
 // Name : BeginGame ()
 //-----------------------------------------------------------------------------
-int GameWin::BeginGame()
+int WindowsGameWin::BeginGame()
 {
-	MSG		msg;
+	MSG	msg;
 
 	// Start main loop
 	while (gameRunning)
@@ -1020,52 +791,9 @@ int GameWin::BeginGame()
 }
 
 //-----------------------------------------------------------------------------
-// Name : sendKeyEvent ()
-//-----------------------------------------------------------------------------
-bool GameWin::handleMouseEvent(MouseEvent event, const ModifierKeysStates &modifierStates)
-{
-    return false;
-}
-
-//-----------------------------------------------------------------------------
-// Name : sendKeyEvent ()
-//-----------------------------------------------------------------------------
-void GameWin::sendKeyEvent(unsigned char key, bool down)
-{
-    //m_dialog.handleKeyEvent(key, down);
-}
-
-//-----------------------------------------------------------------------------
-// Name : sendVirtualKeyEvent ()
-//-----------------------------------------------------------------------------
-void GameWin::sendVirtualKeyEvent(GK_VirtualKey virtualKey, bool down, const ModifierKeysStates& modifierStates)
-{
-    //m_dialog.handleVirtualKeyEvent(virtualKey, down, modifierStates);
-}
-
-//-----------------------------------------------------------------------------
-// Name : sendMouseEvent ()
-//-----------------------------------------------------------------------------
-void GameWin::sendMouseEvent(MouseEvent event, const ModifierKeysStates &modifierStates)
-{
-    handleMouseEvent(event, modifierStates);
-    if (m_scene != nullptr && m_sceneInput)
-        m_scene->handleMouseEvent(event, modifierStates);
-    //m_dialog.handleMouseEvent(event, modifierStates);
-}
-
-//-----------------------------------------------------------------------------
-// Name : onSizeChanged ()
-//-----------------------------------------------------------------------------
-void GameWin::onSizeChanged()
-{
-    
-}
-
-//-----------------------------------------------------------------------------
 // Name : Shutdown ()
 //-----------------------------------------------------------------------------
-bool GameWin::Shutdown()
+bool WindowsGameWin::Shutdown()
 {
 	wglMakeCurrent(m_hDC, NULL);
 	wglDeleteContext(m_hRC);
@@ -1076,7 +804,7 @@ bool GameWin::Shutdown()
 //-----------------------------------------------------------------------------
 // Name : getWindowPosition ()
 //-----------------------------------------------------------------------------
-Point GameWin::getWindowPosition()
+Point WindowsGameWin::getWindowPosition()
 {
 	RECT winRect;
 	GetWindowRect(m_hWnd, &winRect);
@@ -1087,7 +815,7 @@ Point GameWin::getWindowPosition()
 //-----------------------------------------------------------------------------
 // Name : getWindowCurrentMonitor ()
 //-----------------------------------------------------------------------------
-GLuint GameWin::getWindowCurrentMonitor()
+GLuint WindowsGameWin::getWindowCurrentMonitor()
 {    
     for (GLuint i = 0; i < m_monitors.size(); i++)
     {

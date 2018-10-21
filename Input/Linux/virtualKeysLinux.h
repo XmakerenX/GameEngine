@@ -1,7 +1,7 @@
 #ifndef  _VIRTUALKEYSLINUX_H
 #define  _VIRTUALKEYSLINUX_H
 
-#include "virtualKeysGame.h"
+#include "../virtualKeysGame.h"
 
 // created based on keysymdef.h
 static GK_VirtualKey linuxVirtualKeysTable[] = {

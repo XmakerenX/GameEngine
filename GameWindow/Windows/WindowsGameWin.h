@@ -1,25 +1,15 @@
-#ifndef  _GAMEWIN_H
-#define  _GAMEWIN_H
+#ifndef  _WINDOWSGAMEWIN_H
+#define  _WINDOWSGAMEWIN_H
 
 #include <windows.h>
+#undef min
+#undef max
 // must be included first becuase of conflict between x11 and fbxsdk.h
-#include "AssetManager.h"
+#include "../BaseGameWin.h"
 
-#include <GL/glew.h>
-#include <GL/gl.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-
-#include <iostream>
-#include <sstream>
-#include <future>
-
-#include "timer.h"
-#include "Scene.h"
-#include "input.h"
-#include "Sprite.h"
-#include "GUI/DialogUI.h"
 
 typedef BOOL(WINAPI *wglChoosePixelFormatARBProc)(HDC hdc, const int *piAttribIList, const FLOAT *pfAttribFList, UINT nMaxFormats, int *piFormats, UINT *nNumFormats);
 typedef HGLRC(WINAPI *wglCreateContextAttribsARBProc)(HDC hDC, HGLRC hshareContext, const int *attribList);
@@ -37,29 +27,6 @@ typedef HGLRC(WINAPI *wglCreateContextAttribsARBProc)(HDC hDC, HGLRC hshareConte
 
 #define WGL_SAMPLE_BUFFERS_ARB 0x2041
 #define WGL_SAMPLES_ARB 0x2042
-
-struct Resolution
-{
-    Resolution(GLuint _width, GLuint _height)
-    :width(_width), height(_height)
-    {}
-    
-    GLuint width;
-    GLuint height;
-};
-
-std::ostream& operator<<(std::ostream& os, const Resolution res);
-std::istream& operator>>(std::istream& is, Resolution res);
-
-struct Mode1
-{
-    Mode1(GLuint _width, GLuint _height)
-    :width(_width), height(_height)
-    {}
-    
-    GLuint width;
-    GLuint height;
-};
 
 struct MonitorInfo
 {
@@ -97,37 +64,30 @@ struct MonitorInfo
     std::vector<Mode> modes;
 };
 
-class GameWin
+class WindowsGameWin : public BaseGameWin
 {
 public:
-    GameWin             ();
-    virtual ~GameWin    ();
+	WindowsGameWin();
+    virtual ~WindowsGameWin();
+	void setHINSTANCE(HINSTANCE hInstance);
     
-	LRESULT CALLBACK windowProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam);
     bool initWindow     ();
-    bool initOpenGL     (int width, int height, HINSTANCE hInstance);
-    bool createWindow(int width, int height, HINSTANCE hInstance);
-    bool createOpenGLContext(HINSTANCE hInstance);
-    void setFullScreenMode(bool fullscreen);    
-    bool setMonitorResolution(int monitorIndex, Resolution newResolution);
-    void setWindowPosition(int x, int y);
-	void setWindowSize(GLuint width, GLuint height);
-    void moveWindowToMonitor(int monitorIndex);
-    
-    void setRenderStates();
-    
-    void drawing        ();
-    
-    void renderFPS      (Sprite& textSprite, mkFont& font);
-    void reshape        (int width, int height);
-    
-    void ProcessInput   (double timeDelta);
-    void setCursorPos   (Point newPos);
-    Point getCursorPos();
-
+    bool initOpenGL     (int width, int height);
+    bool createWindow   (int width, int height);
+    bool createOpenGLContext();
+            
     int  BeginGame      ();
     bool Shutdown       ();
-    
+
+	void setFullScreenMode(bool fullscreen);
+	bool setMonitorResolution(int monitorIndex, Resolution newResolution);
+	void setWindowPosition(int x, int y);
+	void setWindowSize(GLuint width, GLuint height);
+	void moveWindowToMonitor(int monitorIndex);
+
+	void setCursorPos(Point newPos);
+	Point getCursorPos();
+
     Point getWindowPosition();
     GLuint getWindowCurrentMonitor();
     
@@ -139,61 +99,21 @@ public:
     std::vector<std::vector<Mode1>> getMonitorsModes() const;
     
 protected:    
+	LRESULT CALLBACK windowProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam);
 	static LRESULT CALLBACK staticWindowProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam);
-    void getMonitorsInfo();
-    
-    virtual void initGUI();
-    virtual void renderGUI();
-    virtual bool handleMouseEvent(MouseEvent event, const ModifierKeysStates &modifierStates);
-    virtual void sendKeyEvent(unsigned char key, bool down);
-    virtual void sendVirtualKeyEvent(GK_VirtualKey virtualKey, bool down, const ModifierKeysStates& modifierStates);
-    virtual void sendMouseEvent(MouseEvent event, const ModifierKeysStates &modifierStates);
-    virtual void onSizeChanged();
-    
+
+	virtual void glSwapBuffers();
+	virtual void getMonitorsInfo();
+        
     static std::string s_clipboardString;
-    static const double s_doubleClickTime;
     
+	HINSTANCE m_hInstance;
 	HWND m_hWnd;
 	HDC	m_hDC;
 	HGLRC m_hRC;
 
-    GLuint m_winWidth;
-    GLuint m_winHeight;
-
-    int faceCount;
-    int meshIndex;
-    bool hit;
-
-    Object* selectedObj;
-
-    bool gameRunning;
-    
-    Timer timer;
-    double lastLeftClickTime;
-    double lastRightClickTime;
-
-    float m_hDpi;
-    float m_vDpi;
-
-    Scene* m_scene;
-    bool m_sceneInput;
-
-    Shader* spriteShader;
-    Shader* spriteTextShader;
-
-    bool keysStatus[256];
-    Point oldCursorLoc;
-    bool mouseDrag;
-
-    AssetManager m_asset;
-    mkFont* font_;
-    Sprite m_sprites[2];
-    
-    
     std::vector<MonitorInfo> m_monitors;
     GLuint m_primaryMonitorIndex;
-    
-    Sprite m_topSprites[2];
 };
 
-#endif  //_GAMEWIN_H
+#endif  //_WINDOWSGAMEWIN_H
