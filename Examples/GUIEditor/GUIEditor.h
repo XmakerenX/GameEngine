@@ -1,15 +1,16 @@
-#ifndef  _GUIEDITORWIN_H
-#define  _GUIEDITORWIN_H
+#ifndef  _GUIEditor_H
+#define  _GUIEditor_H
 
 #include "../GameWin.h"
+#include "../BaseGame.h"
 #include "EditorDialog.h"
 
-class GUIEditorWin : public GameWin
+class GUIEditor : public BaseGame
 {
 public:
-    GUIEditorWin();
+    GUIEditor();
 protected:
-    virtual void initGUI();
+    void initGUI();
     virtual void renderGUI();
     
     virtual void sendKeyEvent(unsigned char key, bool down);
@@ -19,4 +20,4 @@ protected:
     EditDialogUI m_editDialog;
 };
 
-#endif  //_GUIEDITORWIN_H
+#endif  //_GUIEditor_H
