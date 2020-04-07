@@ -91,28 +91,53 @@ void Scene::InitLights()
 //-----------------------------------------------------------------------------
 void Scene::InitObjects()
 {    
+         
+    Material red  (glm::vec4(0.8f, 0.0f, 0.0f, 0.4f),
+                   glm::vec4(0.8f, 0.0f, 0.0f, 0.4f),
+                   glm::vec4(0.8f, 0.0f, 0.0f, 0.4f),
+                   glm::vec4(0.8f, 0.0f, 0.0f, 0.4f), 8.0f);
+    GLuint m_redAttribute = m_assetManager.getAttribute("", GL_REPEAT, red, s_meshShaderPath2 );
+    
     m_objects.emplace_back(m_assetManager,
                            glm::vec3(0.0f, 0.0f, 0.0f), // position
                            glm::vec3(0.0f, 0.0f, 0.0f), // rotation
-                           glm::vec3(0.5f, 0.5f, 0.5f), // scale
-                           m_assetManager.getMesh("data/models/porsche.obj"),
+                           glm::vec3(1.0f, 1.0f, 1.0f), // scale
+                           //m_assetManager.getMesh("data/models/porsche.obj"),
+                           m_assetManager.getMesh("data/models/king.fbx"),
                            s_meshShaderPath2 );
+
+    Material black(glm::vec4(0.349019f, 0.215686f, 0.145098f, 1.0f),
+                   glm::vec4(0.278431f, 0.168627f, 0.113725f, 1.0f),
+                   glm::vec4(0.349019f, 0.215686f, 0.145098f, 1.0f),
+                   glm::vec4(0.349019f, 0.215686f, 0.145098f, 1.0f), 79.083539f);
+    
+    GLuint m_blackAttribute = m_assetManager.getAttribute("", GL_REPEAT ,black, s_meshShaderPath2 );
+       
     
     m_objects.emplace_back(m_assetManager,
                            glm::vec3(18.5f, -0.5f, 0.0f), // position
                            glm::vec3(0.0f, 0.0f, 0.0f),   // rotation
-                           glm::vec3(8.0f, 8.0f, 8.0f),   // scale
-                           m_assetManager.getMesh("data/models/king.fbx"),
+                           glm::vec3(2.0f, 2.0f, 2.0f),   // scale
+                           m_assetManager.getMesh("data/models/knight.obj"),
                            s_meshShaderPath2 );
+    
+    std::vector<unsigned int> blackAttribute;
+    blackAttribute.push_back(m_blackAttribute);
+    //blackAttribute.push_back(m_blackAttribute);
+    //blackAttribute.push_back(m_blackAttribute);
+    blackAttribute.push_back(m_redAttribute);
+    blackAttribute.push_back(m_redAttribute);
+    
+    m_objects[m_objects.size() - 1].SetObjectAttributes(blackAttribute);
 
     m_curObj = &m_objects[0];
 
-    m_objects.emplace_back(m_assetManager,
-                           glm::vec3(0.f, 0.0f, 0.0f), // position
-                           glm::vec3(0.0f, 0.0f, 0.0f),  // rotation
-                           glm::vec3(1.0f, 1.0f, 1.0f),  // scale
-                           m_assetManager.getMesh("cube.gen"),
-                           s_meshShaderPath2);
+//     m_objects.emplace_back(m_assetManager,
+//                            glm::vec3(0.f, 0.0f, 0.0f), // position
+//                            glm::vec3(0.0f, 0.0f, 0.0f),  // rotation
+//                            glm::vec3(1.0f, 1.0f, 1.0f),  // scale
+//                            m_assetManager.getMesh("cube.gen"),
+//                            s_meshShaderPath2);
     
 }
 

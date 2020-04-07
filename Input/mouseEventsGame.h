@@ -1,7 +1,7 @@
 #ifndef  _MOUSEEVENTSGAME_H
 #define  _MOUSEEVENTSGAME_H
 
-#include "Graphics/RenderTypes.h"
+#include "../Render/RenderTypes.h"
 
 enum class MouseEventType{Unknown = 0,
                           LeftButton,

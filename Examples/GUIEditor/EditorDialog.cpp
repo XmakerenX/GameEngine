@@ -1,5 +1,5 @@
 #include "EditorDialog.h"
-#include "../Graphics/GUI/DialogUI.cpp"
+#include <Render/GUI/DialogUI.cpp>
 
 //-----------------------------------------------------------------------------
 // Name : EditorDialogUI (constructor)

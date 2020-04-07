@@ -1,7 +1,7 @@
 #ifndef  _BaseWindowN_H
 #define  _BaseWindowN_H
 
-#include "AssetLoading/AssetManager.h"
+#include "../AssetLoading/AssetManager.h"
 #include <boost/signals2/signal.hpp>
 
 #include <iostream>
@@ -11,10 +11,10 @@
 #include <GL/gl.h>
 #include <GL/glew.h>
 
-#include "timer.h"
-#include "Graphics/Scene.h"
-#include "input.h"
-#include "Graphics/Sprite.h"
+#include "../timer.h"
+#include "../Render/Scene.h"
+#include "../Input/input.h"
+#include "../Render/Sprite.h"
 #include <boost/signals2.hpp>
 #include <boost/signals2.hpp>
 #include <boost/signals2.hpp>

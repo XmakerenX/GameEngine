@@ -4,9 +4,9 @@
 #include <unordered_map>
 #include <GL/glew.h>
 #include <glm/glm.hpp>
-#include "../Graphics/RenderTypes.h"
+#include "../Render/RenderTypes.h"
 // for vertex
-#include "../Graphics/Mesh.h"
+#include "../Render/Mesh.h"
 #include "AssetManager.h"
 
 

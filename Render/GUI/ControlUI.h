@@ -5,8 +5,8 @@
 #include <boost/signals2/signal.hpp>
 #include <boost/bind/bind.hpp>
 #include "../RenderTypes.h"
-#include "../../input.h"
-#include "../../mouseEventsGame.h"
+#include "../../Input/input.h"
+#include "../../Input/mouseEventsGame.h"
 #include "../../timer.h"
 #include "../../AssetLoading/AssetManager.h"
 #include "../Sprite.h"

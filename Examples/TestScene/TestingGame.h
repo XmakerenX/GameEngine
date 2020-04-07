@@ -1,22 +1,23 @@
-#ifndef  _GUIEditor_H
-#define  _GUIEditor_H
+#ifndef  _TestingGame_H
+#define  _TestingGame_H
 
 #include <BaseGame.h>
-#include "EditorDialog.h"
+#include <Render/GUI/DialogUI.h>
 
-class GUIEditor : public BaseGame
+class TestingGame : public BaseGame
 {
 public:
-    GUIEditor();
+    TestingGame();
 protected:
-    void initGUI();
+    virtual void initGUI();
     virtual void renderGUI();
     
     virtual void sendKeyEvent(unsigned char key, bool down);
     virtual void sendVirtualKeyEvent(GK_VirtualKey virtualKey, bool down, const ModifierKeysStates& modifierStates);
     virtual void sendMouseEvent(MouseEvent event, const ModifierKeysStates &modifierStates);  
     
-    EditDialogUI m_editDialog;
+    DialogUI m_testDialog;
+    
 };
 
-#endif  //_GUIEditor_H
+#endif  //_TestingGame_H

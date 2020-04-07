@@ -6,8 +6,8 @@
 #include <unistd.h>
 #include <linux/input-event-codes.h>
 #include <X11/Xatom.h>
-#include "../input.h"
-#include "virtualKeysLinux.h"
+#include "../../Input/input.h"
+#include "../../Input/Linux/virtualKeysLinux.h"
 #include <sys/mman.h>
 #include <algorithm>
 #include <fcntl.h>    

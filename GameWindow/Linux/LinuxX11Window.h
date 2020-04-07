@@ -1,7 +1,7 @@
 #ifndef  _LINUXGAMEWIN_H
 #define  _LINUXGAMEWIN_H
 
-#include "../BaseGame.h"
+#include "../../BaseGame.h"
 #include "../BaseWindow.h"
 #include <future>
 

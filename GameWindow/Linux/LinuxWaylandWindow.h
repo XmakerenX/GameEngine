@@ -18,7 +18,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "virtualKeysWayland.h"
+#include "../../Input/Linux/virtualKeysWayland.h"
 
 typedef EGLDisplay (EGLAPIENTRYP eglGetPlatformDisplayEXTProc) (EGLenum platform, void *native_display, const EGLint *attrib_list);
 typedef EGLBoolean (EGLAPIENTRYP eglSwapBuffersWithDamageEXTProc) (EGLDisplay dpy, EGLSurface surface, EGLint *rects, EGLint n_rects);

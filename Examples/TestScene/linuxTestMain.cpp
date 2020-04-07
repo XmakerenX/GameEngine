@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
-#include "../../Linux/LinuxX11Window.h"
-#include "../TestingGame.h"
+#include <GameWindow/Linux/LinuxX11Window.h>
+#include "TestingGame.h"
 
 int main(int argc, char* argv[])
 {

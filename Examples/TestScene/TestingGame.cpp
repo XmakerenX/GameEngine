@@ -1,5 +1,5 @@
 #include "TestingGame.h" 
-#include "../Graphics/GUI/DialogUI.cpp"
+#include <Render/GUI/DialogUI.cpp>
 
 TestingGame::TestingGame()
 {

@@ -3,9 +3,9 @@
 
 #include <glm/glm.hpp>
 #include <fbxsdk.h>
-#include<vector>
-#include<string>
-#include "../Graphics/subMesh.h"
+#include <vector>
+#include <string>
+#include "../Render/subMesh.h"
 
 class FbxLoader
 {

@@ -1,8 +1,8 @@
 #include <iostream>
 #include <string>
-#include "../GUIEditor.h"
-#include "../../Windows/WindowsGameWin.h"
-#include "../../Windows/WindowsConsole.h"
+#include "GUIEditor.h"
+#include <GameWindow/Windows/WindowsGameWin.h>
+#include <GameWindow/Windows/WindowsConsole.h>
 
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {

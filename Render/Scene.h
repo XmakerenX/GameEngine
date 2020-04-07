@@ -5,8 +5,8 @@
 #include "../AssetLoading/AssetManager.h"
 #include "Camera/FreeCam.h"
 #include "Object.h"
-#include "../input.h"
-#include "../mouseEventsGame.h"
+#include "../Input/input.h"
+#include "../Input/mouseEventsGame.h"
 
 struct LIGHT_PREFS
 {

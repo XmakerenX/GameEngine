@@ -25,12 +25,12 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
+#include<png.h>
+#include<jpeglib.h>
+
 #ifdef FBX
     #include <fbxsdk.h>
 #endif
-
-#include<png.h>
-#include<jpeglib.h>
 
 #ifdef _WIN32
     #include <windows.h>

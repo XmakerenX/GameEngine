@@ -10,10 +10,10 @@
 #include <GL/glew.h>
 
 #include "timer.h"
-#include "BaseWindow.h"
-#include "Graphics/Scene.h"
-#include "input.h"
-#include "Graphics/Sprite.h"
+#include "GameWindow/BaseWindow.h"
+#include "Render/Scene.h"
+#include "Input/input.h"
+#include "Render/Sprite.h"
 
 class BaseGame
 {

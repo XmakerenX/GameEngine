@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
-#include "../GUIEditor.h"
-#include "../../Linux/LinuxX11Window.h"
+#include "GUIEditor.h"
+#include <GameWindow/Linux/LinuxX11Window.h>
 
 int main(int argc, char* argv[])
 {

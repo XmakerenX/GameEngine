@@ -2,7 +2,7 @@
 #define  _MESHGENERATOR_H
 
 #include "AssetManager.h"
-#include "../Graphics/Mesh.h"
+#include "../Render/Mesh.h"
 
 class MeshGenerator
 {

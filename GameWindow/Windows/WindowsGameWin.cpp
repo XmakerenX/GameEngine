@@ -2,7 +2,7 @@
 #include <windowsx.h>
 #undef max
 #undef min
-#include "virtualKeysWindows.h"
+#include "../../Input/Windows/virtualKeysWindows.h"
 
 //-----------------------------------------------------------------------------
 // Name : WindowsGameWin (constructor)

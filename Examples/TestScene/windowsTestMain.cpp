@@ -1,13 +1,13 @@
 #include <iostream>
 #include <string>
-#include "../TestingGame.h"
-#include "../../Windows/WindowsGameWin.h"
-#include "../../Windows/WindowsConsole.h"
+#include "TestingGame.h"
+#include <GameWindow/Windows/WindowsGameWin.h>
+#include <GameWindow/Windows/WindowsConsole.h>
 
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
     TestingGame gamewin;
-	WindowsGameWin* window = new WindowsGameWin();
+    WindowsGameWin* window = new WindowsGameWin();
 
     std::string fontName = "NotoMono";
     std::string path;
@@ -18,7 +18,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     std::cout << "starting init window\n";
     std::cout << "--------------------------------\n";
 
-	window->setHINSTANCE(hInstance);
+    window->setHINSTANCE(hInstance);
     std::cout << "starting init OpenGL\n";
     if (!gamewin.initGame(window, 1024, 768))
     {

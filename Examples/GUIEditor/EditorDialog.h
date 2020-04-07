@@ -1,8 +1,8 @@
 #ifndef  _EDITORDIALOGUI_H
 #define  _EDITORDIALOGUI_H
 
-#include "../Graphics/GUI/DialogUI.h"
-#include "../BaseWindow.h"
+#include <Render/GUI/DialogUI.h>
+#include <GameWindow/BaseWindow.h>
 
 #define IDC_CONTROLTYPESTATIC   101
 #define IDC_COMBOX              102
