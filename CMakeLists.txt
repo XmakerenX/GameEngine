@@ -145,11 +145,11 @@ if(WIN32 AND FBX)
         string(REPLACE "libfbxsdk-md.lib" "libfbxsdk.dll" fbx_dll_path ${FBXSDK_LIBRARY_DEBUG})
         add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
                            COMMAND ${CMAKE_COMMAND} -E copy
-                           ${fbx_dll_path} $<TARGET_FILE_DIR:${PROJECT_NAME}>)
+                           ${fbx_dll_path} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
     else()
         string(REPLACE "libfbxsdk-md.lib" "libfbxsdk.dll" fbx_dll_path ${FBXSDK_LIBRARY})
         add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
                            COMMAND ${CMAKE_COMMAND} -E copy
-                           ${fbx_dll_path} $<TARGET_FILE_DIR:${PROJECT_NAME}>)
+                           ${fbx_dll_path} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
     endif(CMAKE_BUILD_TYPE MATCHES Debug)
 endif(WIN32 AND FBX)
