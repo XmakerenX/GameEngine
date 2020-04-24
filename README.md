@@ -20,3 +20,6 @@ A cross platform game engine made using OpenGL and c++
 
 ## Bug Report
 Any bugs you come by please send to xmakerenx@gmail.com.
+
+## License
+GameEngine is licensed under the GNU Public License, Version 3.
